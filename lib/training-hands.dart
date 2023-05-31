@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import './profile.dart';
+import './login.dart';
 import './main.dart';
 import './calendar.dart';
 
@@ -12,12 +14,12 @@ class TrainingHandsMain extends StatefulWidget {
 
 class TrainingHands extends State {
 
-  var _counter = 6;
+  var _counter = 20;
   late Timer _timer;
   bool countDownComplete = false;
 
   void _startTimer() {
-    _counter = 6;
+    _counter = 20;
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {if (_counter > 0) {
@@ -28,11 +30,12 @@ class TrainingHands extends State {
       }});
     }
     );
-    _counter = 6;
+    _counter = 20;
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       body:
@@ -92,16 +95,26 @@ class TrainingHands extends State {
                             children: [
                               Row(
                                 children: [
-                                  TextButton(onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) {
-                                          return Profile();
-                                        }));},
+                                  TextButton(
+                                    onPressed: () {
+                                      if ((user == null)) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) {
+                                              return Login();
+                                            }));
+                                      } else {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) {
+                                              return Profile();
+                                            }));
+                                      }},
                                     child: Icon(
-                                      Icons.account_circle,
+                                      (user == null) ?
+                                      Icons.login_outlined : Icons.account_circle,
                                       color: Colors.white,
-                                      size: 60.0,
+                                      size: 50.0,
                                     ),)
                                 ],
                               ),],
@@ -130,14 +143,44 @@ class TrainingHands extends State {
                     ),
                   ),
 
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('TrainingHands').snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if(snapshot.hasError) return Text('Что-то пошло не так.');
+                        if (!snapshot.hasData) {
+                          return const Text('');
+                        }
+                        final data = snapshot.requireData;
+
+                        return ListView
+                            .builder(
+                            itemCount: data.size,
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext ctxt, int index) {
+                              return new Container(
+                                  margin: EdgeInsets.only(top: 0, bottom: 20, left: 20),
+                                  child: Text(
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontFamily: 'Roboto',
+                                      ),
+                                      (index + 1).toString() + ". " +
+                                          data.docs[index]['Name'] + " " +
+                                          data.docs[index]['Count'].toString() + " раз"));
+                            }
+                        );
+                      }
+                  ),
+
                   Container(
-                    margin: EdgeInsets.only(top: 0, bottom: 20),
+                    margin: EdgeInsets.only(top: 30, bottom: 10),
                     child: Column(
                         children: [
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                (_counter == 1 || _counter == 6 || _counter == 0)?
+                                (_counter == 1 || _counter == 20 || _counter == 0)?
                                 Text(' ', style: TextStyle(fontSize: 34)):
                                 Text('$_counter с',
                                   style: TextStyle(
@@ -151,7 +194,7 @@ class TrainingHands extends State {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                (_counter == 6 || _counter == 1 || _counter == 0)?
+                                (_counter == 20 || _counter == 1 || _counter == 0)?
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       fixedSize: const Size(250, 50),
@@ -185,38 +228,8 @@ class TrainingHands extends State {
                     ),
                   ),
 
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('TrainingHands').snapshots(),
-                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if(snapshot.hasError) return Text('Что-то пошло не так.');
-                        if (!snapshot.hasData) {
-                          return const Text('');
-                        }
-                        final data = snapshot.requireData;
-
-                        return ListView
-                            .builder(
-                            itemCount: data.size,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext ctxt, int index) {
-                              return new Container(
-                                  margin: EdgeInsets.only(top: 0, bottom: 20, left: 20),
-                                  child: Text(
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.white,
-                                        fontFamily: 'Roboto',
-                                      ),
-                                      (index + 1).toString() + ". " +
-                                          data.docs[index]['Name'] + " " +
-                                          data.docs[index]['Count'].toString() + " раз"));
-                            }
-                        );
-                      }
-                  ),
-
                   Container(
-                    margin: EdgeInsets.only(top: 20, bottom: 20),
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child:

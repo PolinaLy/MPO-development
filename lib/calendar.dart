@@ -13,7 +13,10 @@ class Calendar extends State {
   List<String> months =
   ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
   var now = new DateTime.now().month;
-  var index_day = new DateTime.now().month.bitLength; //находит индекс сегодняшего дня в месяце
+  var list_day = [];
+  // var index_day = new DateTime.now().month.bitLength;//находит индекс сегодняшего дня в месяце
+  var index_day = DateTime.now().day;//находит индекс сегодняшего дня в месяце
+  var index_day_button = DateTime.now().day-1;
   var count_day = new DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day; //количество дней в текущем месяце
   @override
   Widget build(BuildContext context) {
@@ -82,7 +85,7 @@ class Calendar extends State {
                                         child: Icon(
                                           Icons.account_circle,
                                           color: Colors.white,
-                                          size: 60.0,
+                                          size: 50.0,
                                         ),)
                                         ],
                                       ),],
@@ -118,7 +121,7 @@ class Calendar extends State {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '${months[now-1]}',
+                                  '${months[now-1]}' ,
                                   style: TextStyle(
                                     fontSize: 22,
                                     color: Colors.white,
@@ -152,17 +155,17 @@ class Calendar extends State {
                                     ),
                                   ),
                                   backgroundColor:
-                                  MaterialStatePropertyAll<Color>(_press),
+                                  MaterialStatePropertyAll<Color>(index == index_day_button? Color(0x14DB1B).withOpacity(0.8) : Colors.black.withOpacity(0.3)),
                                   fixedSize: MaterialStateProperty.all(Size(50, 50))),
-                                  onPressed: () {
-                                    setState(() {
-                                      if(_press == Colors.black.withOpacity(0.3)){
-                                        _press = Color(0x14DB1B).withOpacity(0.8);
-                                      }else{
-                                        _press = Colors.black.withOpacity(0.3);
-                                      }
-                                    });
-                                  },
+                                  onPressed: () {},
+                                  //   setState(() {
+                                  //     if(_press == Colors.black.withOpacity(0.3)){
+                                  //       _press = Color(0x14DB1B).withOpacity(0.8);
+                                  //     }else{
+                                  //       _press = Colors.black.withOpacity(0.3);
+                                  //     }
+                                  //   });
+                                  // },
                                   child:Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,21 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './login.dart';
 import './training.dart';
+import './profile.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
     home: Home(),
+    debugShowCheckedModeBanner: false,
   ));
+
 }
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final user = FirebaseAuth.instance.currentUser;
 
+    return Scaffold(
       body: Container(
           height: double.infinity,
           decoration: BoxDecoration(
@@ -56,16 +61,26 @@ class Home extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              TextButton(onPressed: () {
+                              TextButton(
+                                onPressed: () {
+                                if ((user == null)) {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
                                       return Login();
-                                    }));},
+                                    }));
+                                } else {
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                              return Profile();
+                              }));
+                              }},
                                 child: Icon(
-                                Icons.account_circle,
+                                  (user == null) ?
+                                Icons.login_outlined : Icons.account_circle,
                                 color: Colors.white,
-                                size: 60.0,
+                                size: 50.0,
                               ),)
                               ],
                           ),],
@@ -126,6 +141,7 @@ class Home extends StatelessWidget {
                     MaterialPageRoute(builder: (context) {
                     return Training();
                   },));},
+                  // icon: Image.asset("lib/img/icon-min.png"),
                   label: Text("Старт!",
                     style: TextStyle(
                       fontSize: 27,
@@ -133,33 +149,9 @@ class Home extends StatelessWidget {
                       fontFamily: 'Roboto',
                     ),
                     textAlign: TextAlign.center,),
-                  backgroundColor: Color(0x880000).withOpacity(0.8),),
+                  backgroundColor: Color(0x880000).withOpacity(0.8),
+                ),
               ),
             ],),),);
   }
 }
-
-// class ListTrainingHands extends State {
-//   List<String> list =['first text', 'first text', 'first text', 'first text'];
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         body:
-//         Expanded(
-//           child: Column(
-//             // color: Color(0x242C2F).withOpacity(1),
-//             children: [ListView.builder (  //может быть только в контейнере но никак не внутри строки или колонки
-//                 itemCount: list.length,
-//                 itemBuilder: (BuildContext ctxt, int index) {
-//                   return new Text(
-//                       style: TextStyle(
-//                         fontSize: 27,
-//                         color: Colors.white,
-//                         fontFamily: 'Roboto',
-//                       ),
-//                       (index+1).toString()+ " "+list[index]);
-//                 }
-//             )],
-//           ),
-//         ));}}
-

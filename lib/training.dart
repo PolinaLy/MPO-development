@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './profile.dart';
+import './login.dart';
 import './main.dart';
 import './training-hands.dart';
 import './training-legs.dart';
@@ -8,6 +10,8 @@ import './training-corset.dart';
 class Training extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -53,16 +57,26 @@ class Training extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                TextButton(onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return Profile();
-                                      }));},
+                                TextButton(
+                                  onPressed: () {
+                                    if ((user == null)) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return Login();
+                                          }));
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return Profile();
+                                          }));
+                                    }},
                                   child: Icon(
-                                    Icons.account_circle,
+                                    (user == null) ?
+                                    Icons.login_outlined : Icons.account_circle,
                                     color: Colors.white,
-                                    size: 60.0,
+                                    size: 50.0,
                                   ),)
                               ],
                             ),],
@@ -165,7 +179,7 @@ class Training extends StatelessWidget {
                     image: DecorationImage(
                       colorFilter: ColorFilter.mode(
                           Colors.black.withOpacity(0.2), BlendMode.luminosity),
-                      image: AssetImage("lib/img/corset-max.jpg"),
+                      image: AssetImage("lib/img/corset3.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
