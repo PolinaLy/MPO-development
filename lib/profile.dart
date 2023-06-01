@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import './main.dart';
 import './training.dart';
 import './calendar.dart';
-import './login.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
